@@ -1,6 +1,6 @@
 
 /**
- * \file      featuresMatcher.h
+ * \file      kukaDynRCM.h
  *
  * \brief     C++ Header File template
  *
