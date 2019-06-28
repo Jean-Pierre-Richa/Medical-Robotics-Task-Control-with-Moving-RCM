@@ -3,7 +3,7 @@
  *
  * \brief     C++ Source File template
  *
- * \author    Jean Pierre Richa and Ahmad Elhelow
+ * \author    Jean Pierre Richa
  *
  * Project:   Medical Robotics
  */
@@ -14,6 +14,8 @@
 
 #include <iostream>
 #include <vector>
+#include <Eigen/QR>
+#include <Eigen/Dense>
 #include "kukaDynRCM.h"
 
 using namespace std;
@@ -22,12 +24,10 @@ using namespace std;
  *       C L A S S - M E M B E R - F U N C T I O N S
  ******************************************************************************/
 
-void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
+arrVec3d DYN::RCM::dirKin(DYN::Params& kinParams){
 
   vecxd q(8);
   q = kinParams.q;
-
-  // cout << kinParams.l5 <<endl;
 
   double q1=q(0), q2=q(1), q3=q(2), q4=q(3), q5=q(4), q6=q(5), q7=q(6), lambda=q(7);
   double s1=sin(q1), s2=sin(q2), s3=sin(q3), s4=sin(q4), s5=sin(q5), s6=sin(q6), s7=sin(q7);
@@ -50,17 +50,44 @@ void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   vec3d p4(-c1*c2*(l2+l3), -s1*s2*(l2+l3), c2*(l2+l3)+(l0+l1)*(l2+l3));
 
   vec3d p5((c1*c2*c3*s4 - s1*s3*s4 - c1*s2*c4)*(l4+l5) - c1*s2*(l2+l3),
-           (s1*c2*c3*s4 + c1*s3*s4 - s1*s2*c4)*(l4+l5) - s1*s2*(l2+l3),
-           (s2*c3*s4 + c2*c4)*(l4*l5) + c2*(l2+l3) + (l0+l1)*(l2+l3)) ;
+          (s1*c2*c3*s4 + c1*s3*s4 - s1*s2*c4)*(l4+l5) - s1*s2*(l2+l3),
+          (s2*c3*s4 + c2*c4)*(l4*l5) + c2*(l2+l3) + (l0+l1)*(l2+l3)) ;
 
   vec3d p6((c1*c2*c3*s4 - s1*s3*s4 - c1*s2*c4)*(l4+l5) - c1*s2*(l2+l3),
-           (s1*c2*c3*s4 + c1*s3*s4 - s1*s2*c4)*(l4+l5) - s1*s2*(l2+l3),
-           (s2*c3*s4 + c2*c4)*(l4*l5) + c2*(l2+l3) + (l0+l1)*(l2+l3) );
+          (s1*c2*c3*s4 + c1*s3*s4 - s1*s2*c4)*(l4+l5) - s1*s2*(l2+l3),
+          (s2*c3*s4 + c2*c4)*(l4*l5) + c2*(l2+l3) + (l0+l1)*(l2+l3) );
 
   vec3d p7((-c1*c2*c3*c4*c5*s6 + s1*s3*c4*c5*s6 - c1*s2*s4*c5*s6 + c1*c2*s3*s5*s6 + s1*c3*s5*s6 + c1*c2*c3*s4*c6 - s1*s3*s4*c6 - c1*s2*s4*c6)*(l7 + off) + p6(0),
-           (-s1*c2*c3*c4*c5*s6 - c1*s3*c4*c5*s6 - s1*s2*s4*c5*s6 + s1*c2*s3*s5*s6 - c1*c3*s5*s6 + s1*c2*c3*s4*c6 + c1*s3*s4*c6 - s1*s2*c4*c6)*(l7 + off) + p6(1),
-           (-s2*c3*c4*c5*s6 + c2*s4*c5*s6 + s2*s3*s5*s6 + s2*c3*s4*c6 + c2*c4*c6)*(l7 + off) + p6(2));
+          (-s1*c2*c3*c4*c5*s6 - c1*s3*c4*c5*s6 - s1*s2*s4*c5*s6 + s1*c2*s3*s5*s6 - c1*c3*s5*s6 + s1*c2*c3*s4*c6 + c1*s3*s4*c6 - s1*s2*c4*c6)*(l7 + off) + p6(1),
+          (-s2*c3*c4*c5*s6 + c2*s4*c5*s6 + s2*s3*s5*s6 + s2*c3*s4*c6 + c2*c4*c6)*(l7 + off) + p6(2));
 
+  arrVec3d p{p0,p1,p2,p3,p4,p5,p6,p7};
+
+  return p;
+}
+
+
+vecxd DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
+
+  vecxd q(8);
+  q = kinParams.q;
+
+  double q1=q(0), q2=q(1), q3=q(2), q4=q(3), q5=q(4), q6=q(5), q7=q(6), lambda=q(7);
+  double s1=sin(q1), s2=sin(q2), s3=sin(q3), s4=sin(q4), s5=sin(q5), s6=sin(q6), s7=sin(q7);
+  double c1=cos(q1), c2=cos(q2), c3=cos(q3), c4=cos(q4), c5=cos(q5), c6=cos(q6), c7=cos(q7);
+
+  double l0=kinParams.l0, l1=kinParams.l1,
+         l2=kinParams.l2, l3=kinParams.l3,
+         l4=kinParams.l4, l5=kinParams.l5,
+         l6=kinParams.l6, l7=kinParams.l7,
+         off=kinParams.off;
+
+  arrVec3d p(8);
+  p = dirKin(kinParams);
+
+  vec3d p6, p7;
+  p6 = p[6];
+  p7 = p[7];
   MatXd J_6(6,7);
 
   // Jacobian Matrix
@@ -160,13 +187,11 @@ void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   // Task Jacobian
   MatXd Jt(3,8); // 3x8 matrix
   Jt.block<3,7>(0,0)=linJ6; // First 3x7 block
-  // cout << Jt << endl;
+
   // Extention Jacobian 6x8 it includes the J_RCM and Jt (the task Jacobian)
   MatXd J_a(6,8);
   J_a.block<3,8>(0,0)=J_rCM;
   J_a.block<3,8>(3,0)=Jt;
-
-  // cout << J_a << endl;
 
   // RCM and additional task errors
   double x_rcm=p7(0)+lambda*(p6(0)-p7(0));
@@ -177,31 +202,32 @@ void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   vec3d err_lam(kinParams.target_pos(0)-x_rcm, kinParams.target_pos(1)-y_rcm, kinParams.target_pos(2)-z_rcm);
   vec3d err_t(kinParams.Xtr-p6(0), kinParams.Ytr-p6(1), kinParams.Ztr+l7-p6(2));
 
-  MatXd err(6,1); // 3x2 matrix
+  MatXd err(6,1); // 6x1 matrix
   err.block<3,1>(0,0)=err_lam;
   err.block<3,1>(3,0)=err_t;
-
-  // cout << err << endl;
 
   // Position and orientation control with RCM constraint
   MatXd identity = MatXd::Identity(8,8);
   // Jacobian pseudoinverse
   MatXd Jp(8,6);
-  Jp = J_a.completeOrthogonalDecomposition().pseudoInverse(); // 16x3 matrix
+  // Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd> cqr(J_a);
+  // Jp = cqr.pseudoInverse();
+  Jp = J_a.completeOrthogonalDecomposition().pseudoInverse(); // 8x6 matrix
+
   vecxd w(8);
   w << 0,0,0,0,0,0,lambda-0.2,0;
-  // cout << "W " << w << endl;
-  //
   w=-10*w;
+
   vecxd u(8);
   u << 0,0,0,0,0,0,0,0;
-  cout << Jp*kinParams.k*err+(identity-(Jp*J_a))*w.transpose() << endl;
-  //
+
   // // 8x6 * 6x6 * 6x1 + (8x8-(6x8*8x6)) * 8x1 // dimensions to be checked
-  u.transpose()=Jp*kinParams.k*err+(identity-Jp*J_a)*(w.transpose());
+  u=Jp*kinParams.k*err+(identity-Jp*J_a)*(w);
   //
   q << u( 0), u(1), u(2), u(3), u(4), u(5), u(6), u(7);
 
-  cout << q <<endl;
+  cout << q << endl;
+
+  return q;
 
 }

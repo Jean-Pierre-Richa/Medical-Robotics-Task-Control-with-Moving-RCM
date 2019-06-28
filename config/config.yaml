@@ -1,0 +1,29 @@
+# Configuration file holding all the kinematic parameters
+
+link0: 0.0
+# Length of link 1 in meters
+link1: 0.326
+# Length of link 2 in meters
+link2: 0.2
+# Length of link 3 in meters
+link3: 0.2
+# Length of link 4 in meters
+link4: 0.2
+# Length of link 5 in meters
+link5: 0.19
+# Length of link 6 in meters
+link6: 0
+# Length of link 7 in meters
+link7: 0.23
+
+off: 0.078
+# Target position on the x axis
+Xtr: 0.5
+# Target position on the y axis
+Ytr: 0.5
+# Target position on the z axis
+Ztr: 0.0
+# Joints state vector
+q: [0, 0, 0, 0, 0, 0, 0, 0.1]
+# Control gain
+gain: 1
