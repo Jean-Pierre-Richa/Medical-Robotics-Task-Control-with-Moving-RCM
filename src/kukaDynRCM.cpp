@@ -3,7 +3,7 @@
  *
  * \brief     C++ Source File template
  *
- * \author    Jean Pierre Richa
+ * \author    Jean Pierre Richa and Ahmad Elhelow
  *
  * Project:   Medical Robotics
  */
@@ -27,7 +27,7 @@ void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   vecxd q(8);
   q = kinParams.q;
 
-  cout << kinParams.l5 <<endl;
+  // cout << kinParams.l5 <<endl;
 
   double q1=q(0), q2=q(1), q3=q(2), q4=q(3), q5=q(4), q6=q(5), q7=q(6), lambda=q(7);
   double s1=sin(q1), s2=sin(q2), s3=sin(q3), s4=sin(q4), s5=sin(q5), s6=sin(q6), s7=sin(q7);
@@ -148,19 +148,23 @@ void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   linJ7 = J_7.block<3,7>(0,0);
 
   // RCM Kinematics
+
+  // Jacobian RCM
   MatXd J_lambda(3,7); // 3x7 matrix
   J_lambda = ((1-lambda)*linJ7)+(lambda*(linJ6)); // 3x7 matrix
-  MatXd Jt(3,8); // 3x8 matrix
-  Jt.block<3,7>(0,0)=linJ6; // First 3x7 block
   vec3d g=p6-p7; // 3D vector
-
   MatXd J_rCM(3,8); // 3x8 matrix composed by the matrix J_lambda and vector g
   J_rCM.block<3,7>(0,0)=J_lambda; // First 3x7 block
   J_rCM.block<3,1>(0,7)=g; // 3x1 vector on the 8th column
 
-  MatXd J_a(3,16);
+  // Task Jacobian
+  MatXd Jt(3,8); // 3x8 matrix
+  Jt.block<3,7>(0,0)=linJ6; // First 3x7 block
+  // cout << Jt << endl;
+  // Extention Jacobian 6x8 it includes the J_RCM and Jt (the task Jacobian)
+  MatXd J_a(6,8);
   J_a.block<3,8>(0,0)=J_rCM;
-  J_a.block<3,8>(0,8)=Jt;
+  J_a.block<3,8>(3,0)=Jt;
 
   // cout << J_a << endl;
 
@@ -173,31 +177,31 @@ void DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   vec3d err_lam(kinParams.target_pos(0)-x_rcm, kinParams.target_pos(1)-y_rcm, kinParams.target_pos(2)-z_rcm);
   vec3d err_t(kinParams.Xtr-p6(0), kinParams.Ytr-p6(1), kinParams.Ztr+l7-p6(2));
 
-  MatXd err(3,2); // 3x2 matrix
+  MatXd err(6,1); // 3x2 matrix
   err.block<3,1>(0,0)=err_lam;
-  err.block<3,1>(0,1)=err_t;
+  err.block<3,1>(3,0)=err_t;
 
   // cout << err << endl;
 
   // Position and orientation control with RCM constraint
   MatXd identity = MatXd::Identity(8,8);
   // Jacobian pseudoinverse
-  MatXd Jp (16,3);
-  Jp = J_a.completeOrthogonalDecomposition().pseudoInverse();
+  MatXd Jp(8,6);
+  Jp = J_a.completeOrthogonalDecomposition().pseudoInverse(); // 16x3 matrix
   vecxd w(8);
-  cout << "w" << w << endl;
-  // w.col(7) = lambda-0.2;
-  // w=-10*w;
-  // // 16x3 * K * 3x2 +(8x8-(16x3*3x16)) // dimensions to be checked
-  // vecxd U(8);
-  // U=Jp*kinParams.K*err+(identity-Jp*J_a)*w;
+  w << 0,0,0,0,0,0,lambda-0.2,0;
+  // cout << "W " << w << endl;
   //
-  // q << U(0), U(1), U(2), U(3), U(4), U(5), U(6), U(7);
+  w=-10*w;
+  vecxd u(8);
+  u << 0,0,0,0,0,0,0,0;
+  cout << Jp*kinParams.k*err+(identity-(Jp*J_a))*w.transpose() << endl;
   //
-  // cout << q <<endl;
+  // // 8x6 * 6x6 * 6x1 + (8x8-(6x8*8x6)) * 8x1 // dimensions to be checked
+  u.transpose()=Jp*kinParams.k*err+(identity-Jp*J_a)*(w.transpose());
   //
+  q << u( 0), u(1), u(2), u(3), u(4), u(5), u(6), u(7);
 
-
-
+  cout << q <<endl;
 
 }

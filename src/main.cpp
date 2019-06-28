@@ -26,6 +26,12 @@ int main(int argc, char** argv){
   kinParams.Ztr = 5;
   kinParams.target_pos << 1, 4, 7;
   kinParams.q << 1, 2, 3, 4, 5, 6, 7, 8;
+  kinParams.k << 0.1,0,0,0,0,0,
+                 0,0.1,0,0,0,0,
+                 0,0,0.1,0,0,0,
+                 0,0,0,0.1,0,0,
+                 0,0,0,0,0.1,0,
+                 0,0,0,0,0,0.1;
 
   DYN::RCM::kukaDynRCM(kinParams);
 
