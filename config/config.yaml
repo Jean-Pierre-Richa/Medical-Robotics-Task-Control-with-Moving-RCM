@@ -1,21 +1,10 @@
 # Configuration file holding all the kinematic parameters
 
-link0: 0.0
-# Length of link 1 in meters
-link1: 0.326
-# Length of link 2 in meters
-link2: 0.2
-# Length of link 3 in meters
-link3: 0.2
-# Length of link 4 in meters
-link4: 0.2
-# Length of link 5 in meters
-link5: 0.19
-# Length of link 6 in meters
-link6: 0
-# Length of link 7 in meters
-link7: 0.23
-
+# Control gain
+gain: 1
+# Number of joints
+N: 7
+#
 off: 0.078
 # Target position on the x axis
 Xtr: 0.5
@@ -23,7 +12,26 @@ Xtr: 0.5
 Ytr: 0.5
 # Target position on the z axis
 Ztr: 0.0
+#
+fv: 0.9
+#
+fc: 0.9
 # Joints state vector
 q: [0, 0, 0, 0, 0, 0, 0, 0.1]
-# Control gain
-gain: 1
+#
+fv_vec: [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9]
+# links lenghts
+lengths: [0.326, 0.2, 0.2, 0.2, 0.19, 0.78, 0.0]
+# Masses
+masses: [5, 4.29968, 3.65853, 2.38466, 1.70355, 0.40007, 0.65014]
+
+
+# External Forces Part
+# Inertia vectors
+inertiaVecx: [0.01,     0.000189,    0.01,      0.01,       0.01,        0.01,
+              0.04741,  0.05,        0.001601, -0.00000621, 0.0001166,  -0.000914,
+              0.046951, 0.0008344,   0.05,     -0.000577,   0.000409,   -0.000577,
+              0.012423, 0.007270,    0.009988, -0.000518,   0.00000002, -0.000548,
+              0.006322, 0.001202,    0.007080, -0.000216,   0.000006,   -0.005,
+              0.000527, 0,           0.003489,  0.000048,  -0.0000375,  -0.001030,
+              0,        0.000032,    0.000118, -0.00000005, 0,           0]

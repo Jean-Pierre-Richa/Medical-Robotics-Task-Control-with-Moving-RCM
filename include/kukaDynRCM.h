@@ -45,7 +45,7 @@ struct Params{
  * \Calculates the direct kinematics and jacobian matrices of the kuka LWR for
  * \the 6th and 7th joints
  *
-*/
+ */
 
 class RCM{
   public:

@@ -226,7 +226,7 @@ vecxd DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
   //
   q << u( 0), u(1), u(2), u(3), u(4), u(5), u(6), u(7);
 
-  cout << q << endl;
+  // cout << q << endl;
 
   return q;
 
