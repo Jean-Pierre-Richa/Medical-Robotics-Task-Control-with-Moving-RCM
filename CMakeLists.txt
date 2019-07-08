@@ -19,6 +19,7 @@ include_directories(
 set( SOURCES ${CMAKE_SOURCE_DIR}
               src/kukaDynRCM.cpp
               src/externalForcesEstimation.cpp
+              src/others.cpp
 #              src/readMeasurements.cpp
 #              src/RoboteqCommand.cpp
 #              src/RoboteqParser.cpp

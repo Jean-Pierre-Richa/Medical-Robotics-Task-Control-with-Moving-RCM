@@ -24,7 +24,7 @@ using namespace std;
  *       C L A S S - M E M B E R - F U N C T I O N S
  ******************************************************************************/
 
-arrVec3d DYN::RCM::dirKin(DYN::Params& kinParams){
+vecEigens DYN::RCM::dirKin(DYN::Params& kinParams){
 
   vecxd q(8);
   q = kinParams.q;
@@ -60,9 +60,18 @@ arrVec3d DYN::RCM::dirKin(DYN::Params& kinParams){
   vec3d p7((-c1*c2*c3*c4*c5*s6 + s1*s3*c4*c5*s6 - c1*s2*s4*c5*s6 + c1*c2*s3*s5*s6 + s1*c3*s5*s6 + c1*c2*c3*s4*c6 - s1*s3*s4*c6 - c1*s2*s4*c6)*(l7 + off) + p6(0),
           (-s1*c2*c3*c4*c5*s6 - c1*s3*c4*c5*s6 - s1*s2*s4*c5*s6 + s1*c2*s3*s5*s6 - c1*c3*s5*s6 + s1*c2*c3*s4*c6 + c1*s3*s4*c6 - s1*s2*c4*c6)*(l7 + off) + p6(1),
           (-s2*c3*c4*c5*s6 + c2*s4*c5*s6 + s2*s3*s5*s6 + s2*c3*s4*c6 + c2*c4*c6)*(l7 + off) + p6(2));
+  cout << p7 << endl;
+  
+  vecEigens p(3);
+  p.push_back(p1);
+  p.push_back(p2);
+  p.push_back(p3);
+  p.push_back(p4);
+  p.push_back(p5);
+  p.push_back(p6);
+  p.push_back(p7);
 
-  arrVec3d p{p0,p1,p2,p3,p4,p5,p6,p7};
-
+  cout << p7 << endl;
   return p;
 }
 
@@ -82,7 +91,7 @@ vecxd DYN::RCM::kukaDynRCM(DYN::Params& kinParams){
          l6=kinParams.l6, l7=kinParams.l7,
          off=kinParams.off;
 
-  arrVec3d p(8);
+  vecEigens p(8);
   p = dirKin(kinParams);
 
   vec3d p6, p7;

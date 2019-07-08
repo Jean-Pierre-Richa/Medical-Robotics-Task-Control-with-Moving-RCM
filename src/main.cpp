@@ -5,12 +5,14 @@
 #include <yaml-cpp/yaml.h>
 #include "kukaDynRCM.h"
 #include "forces.h"
+#include "common.h"
 
 using namespace std;
 
 DYN::Params kinParams;
 DYN::dynamicParams dynParams;
 DYN::inertiaMat iMat;
+DYN::residualParams residual;
 
 // Config file dir
 static const std::string CONFIG_FILE = "../config/config.yaml";
@@ -71,6 +73,7 @@ int main(int argc, char** argv){
   kinParams.k.block<3,3>(3,3)=K_t;
 
   DYN::RCM::kukaDynRCM(kinParams);
+  cout << kinParams.k << endl;
 
   // External forces part
   dynParams.N=N_;
@@ -89,7 +92,7 @@ int main(int argc, char** argv){
     }
     dynParams.inertiaVectors.block<1,6>(i,0) << iVec[0], iVec[1], iVec[2], iVec[3], iVec[4], iVec[5];
   }
-  // cout << dynParams.inertiaVectors << endl;
+  cout << dynParams.inertiaVectors << endl;
 
   vecEigens V(7);
 
@@ -108,5 +111,5 @@ int main(int argc, char** argv){
 
 
   DYN::FORCE::external_forces_estimation(dynParams, iMat);
-
+  DYN::RESIDUAL::NewEul_Aux(kinParams, dynParams, residual);
 }

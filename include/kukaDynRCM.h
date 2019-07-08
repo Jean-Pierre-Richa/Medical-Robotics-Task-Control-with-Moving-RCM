@@ -17,11 +17,7 @@
  ******************************************************************************/
 
 #include <Eigen/Dense>
-
-typedef Eigen::Vector3d vec3d;
-typedef Eigen::VectorXd vecxd;
-typedef Eigen::MatrixXd MatXd;
-typedef std::vector<vec3d> arrVec3d;
+#include "common.h"
 
 
 /*******************************************************************************
@@ -34,6 +30,7 @@ namespace DYN{
  */
 struct Params{
   double gain, l0, l1, l2, l3, l4, l5, l6, l7, off, Xtr, Ytr, Ztr;
+  int ee_length;
   vecxd target_pos;
   vecxd q;
   MatXd k;
@@ -50,7 +47,7 @@ struct Params{
 class RCM{
   public:
     static vecxd kukaDynRCM(Params& kinParams);
-    static arrVec3d dirKin(DYN::Params& kinParams);
+    static vecEigens dirKin(DYN::Params& kinParams);
 
   }; // class kukaDyn
 
