@@ -31,8 +31,8 @@ struct dynamicParams{
   int N;
   double fv, fc;
   MatXd tau_act, inertiaVectors;
-  vecxd fv_vec, lengths, masses;
-  dynamicParams() : N(0), fv(0.0), fc(0.0), tau_act(N,1), inertiaVectors(7,6), fv_vec(7), lengths(7), masses(7){}
+  vecxd fv_vec, fc_vec, lengths, masses;
+  dynamicParams() : N(0), fv(0.0), fc(0.0), tau_act(N,1), inertiaVectors(7,6), fv_vec(7), fc_vec(7), lengths(7), masses(7){}
 };
 
 /*
@@ -49,14 +49,13 @@ struct inertiaMat{
  * \Pdd: linear acceleration, Pcdd: linear com acceleration
  */
 struct residualParams{
-  int kri, tau; // Gear Reduction Ratio and forces respectively
+  int kri; // Gear Reduction Ratio and forces respectively
   double Im, mm; // Rotor inertia and Rotor mass respectively
-  // vecEigen3Mat L; // vector of 3x3 eigen matrices
-  vecxd m, qd, qdd, g, L; // g:1x3 vec, vectors (m & I:1x7, qd & qdd:7x1(qd and qdd should be transposed))
+  vecxd qd, qdd, g, tau; // g:1x3 vec, vectors (m:1x7, qd & qdd & tau:7x1(qd and qdd should be transposed))
   vec3Eigens W, Wd, Wmd, Pdd, Pcdd, Rici, Rij; // all = 7 dimensional vector (1x7 vector) of 3x1 vectors
   vecEigen4Mat A; // 8 dimensional vector of 4x4 matrices
-  vecEigen3Mat Rot, I; // 8 dimensional vector of 3x3 matrices
-  residualParams() : tau(0), kri(0), L(7), Im(0.0), mm(0.0), m(7), qd(7), qdd(7), g(3), W(7), Wd(7), Wmd(7), Pdd(7), Pcdd(7), Rici(7), Rij(7){}
+  vecEigen3Mat Rot, I; // 8 and 7 dimensional vector of 3x3 matrices respectively
+  residualParams() : kri(0), Im(0.0), mm(0.0), qd(7), qdd(7), g(3), tau(7), W(7), Wd(7), Wmd(7), Pdd(7), Pcdd(7), Rici(7), Rij(7){}
 };
 
 /**
@@ -90,10 +89,10 @@ class FORCE{
 
 class RESIDUAL{
   public:
-    static void NewEulForw(Params& kinParams, dynamicParams& dynParams, residualParams& residual);
-    static void NewEul_Aux(Params& kinParams, dynamicParams& dynParams, residualParams& residual);
-    static MatXd KukaKinematics(Params& kinParams, dynamicParams& dynParams, residualParams& residual);
-    static int NewEulBack(Params& kinParams, dynamicParams& dynParams, residualParams& residual);
+    static void NewEulForw(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
+    static void NewEul_Aux(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
+    static MatXd KukaKinematics(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
+    static vecxd NewEulBack(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
 };
 
 } //namespace

@@ -21,4 +21,6 @@ void DYN::FORCE::external_forces_estimation(dynamicParams& dynParams, inertiaMat
   masses = dynParams.masses;
   // cout << "masses " << masses << endl;
 
+  
+
 }

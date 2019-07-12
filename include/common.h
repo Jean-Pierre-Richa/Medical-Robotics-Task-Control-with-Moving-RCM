@@ -27,4 +27,15 @@ typedef std::vector<Eigen::Vector3d> vec3Eigens;
 typedef std::vector<Eigen::MatrixXd> vecEigenMats;
 typedef std::vector<Eigen::VectorXd> vecEigens;
 
+template <typename T>
+int sign (const T &val){
+  return (val>0)-(val<0);
+}
+
+template <typename T>
+std::vector<int> sign (const std::vector<T> &v){
+  std::vector<int> r(v.size());
+  std::transform(v.begin(), v.end(), r.begin(), (int(*)(const T&))sign);
+  return r;
+}
 #endif // _COMMON_H_

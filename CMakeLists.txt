@@ -5,15 +5,22 @@ project(MedRob)
 add_compile_options(-std=c++11)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-find_package( yaml-cpp REQUIRED )
+find_package( yaml-cpp REQUIRED)
+
+set(CMAKE_BUILD_TYPE=Release)
+
 
 ###########
 ## Build ##
 ###########
 
+include_directories (${VREP_DIR})
+
 include_directories(
   include
+  ${CMAKE_SOURCE_DIR}/remoteApi
   ${EIGEN3_INCLUDE_DIR}
+  ${YAML_CPP_INCLUDE_DIR}
 )
 
 set( SOURCES ${CMAKE_SOURCE_DIR}
