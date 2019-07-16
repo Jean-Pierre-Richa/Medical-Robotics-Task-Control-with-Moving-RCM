@@ -19,6 +19,7 @@
 #include "common.h"
 #include "kukaDynRCM.h"
 
+
 /*******************************************************************************
  *       N A M E S P A C E
  ******************************************************************************/
@@ -66,7 +67,9 @@ struct residualParams{
  */
 class FORCE{
   public:
-    static void external_forces_estimation(dynamicParams& dynParams,
+    static void external_forces_estimation(Params& kinParams,
+                                           dynamicParams& dynParams,
+                                           residualParams& residual,
                                            inertiaMat& iMat);
     static MatXd calcInertiaMat(vecxd& v){
       MatXd inertiaMatrix(3,3);
@@ -89,10 +92,25 @@ class FORCE{
 
 class RESIDUAL{
   public:
-    static void NewEulForw(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
-    static void NewEul_Aux(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
-    static MatXd KukaKinematics(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
-    static vecxd NewEulBack(Params& kinParams, dynamicParams& dynParams, residualParams& residual, inertiaMat& iMat);
+    static void NewEulForw(Params& kinParams,
+                           dynamicParams& dynParams,
+                           residualParams& residual,
+                           inertiaMat& iMat);
+
+    static void NewEul_Aux(Params& kinParams,
+                           dynamicParams& dynParams,
+                           residualParams& residual,
+                           inertiaMat& iMat);
+
+    static MatXd KukaKinematics(Params& kinParams,
+                                dynamicParams& dynParams,
+                                residualParams& residual,
+                                inertiaMat& iMat);
+
+    static vecxd NewEulBack(Params& kinParams,
+                            dynamicParams& dynParams,
+                            residualParams& residual,
+                            inertiaMat& iMat);
 };
 
 } //namespace
